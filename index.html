@@ -11,7 +11,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #0619b3;
             color: #ffffff;
-            overflow-x: hidden;h
+            overflow-x: hidden;
         }
         .gsap-hero-title, .gsap-hero-subtitle, .gsap-hero-cta, .gsap-nav-item, .gsap-logo, .gsap-hero-image, .gsap-gallery-item {
             opacity: 0;
@@ -90,6 +90,7 @@
                 <a href="#gallery" class="text-white hover:opacity-80 transition-opacity gsap-nav-item">Features</a>
                 <a href="#about" class="text-white hover:opacity-80 transition-opacity gsap-nav-item">About</a>
                 <a href="#investors" class="text-white hover:opacity-80 transition-opacity gsap-nav-item">Investors</a>
+                <a href="#" id="admin-btn" class="text-white hover:opacity-80 transition-opacity gsap-nav-item">Admin</a>
             </nav>
         </div>
     </header>
@@ -260,6 +261,26 @@
         </div>
     </div>
     
+    <!-- Admin Login Modal -->
+    <div id="admin-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <button id="close-admin-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors">&times;</button>
+            <h2 class="text-2xl font-bold mb-4 text-center">Admin Login</h2>
+            <form id="admin-form">
+                <div class="mb-4">
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                    <input type="text" id="username" name="username" required class="w-full bg-white/10 p-3 rounded-lg border border-white/20 focus:ring-2 focus:ring-white focus:outline-none transition-all">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                    <input type="password" id="password" name="password" required class="w-full bg-white/10 p-3 rounded-lg border border-white/20 focus:ring-2 focus:ring-white focus:outline-none transition-all">
+                </div>
+                <button type="submit" class="w-full bg-white text-[#0619b3] font-bold py-3 px-6 rounded-lg hover:bg-opacity-90 transition-all transform hover:scale-105">Login</button>
+                <p id="admin-form-status" class="text-center mt-4 text-sm text-red-400"></p>
+            </form>
+        </div>
+    </div>
+
     <!-- Image Expansion Modal -->
     <div id="image-modal" class="modal-overlay hidden">
         <div class="modal-content">
@@ -270,7 +291,7 @@
 
     <!-- Back to Top Button -->
     <button id="back-to-top" class="fixed bottom-8 right-8 bg-white text-[#0619b3] w-12 h-12 rounded-full flex justify-center items-center shadow-lg transition-all duration-300 opacity-0 pointer-events-none hover:bg-opacity-90 hover:scale-110 z-40">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
     </button>
 
 
@@ -371,6 +392,17 @@
             closeDemoModalBtn.addEventListener('click', closeDemoModal);
             demoModal.addEventListener('click', (e) => { if (e.target === demoModal) closeDemoModal(); });
 
+            // Admin Modal
+            const adminModal = document.getElementById('admin-modal');
+            const adminBtn = document.getElementById('admin-btn');
+            const closeAdminModalBtn = document.getElementById('close-admin-modal-btn');
+            const openAdminModal = () => adminModal.classList.remove('hidden');
+            const closeAdminModal = () => adminModal.classList.add('hidden');
+            adminBtn.addEventListener('click', (e) => { e.preventDefault(); openAdminModal(); });
+            closeAdminModalBtn.addEventListener('click', closeAdminModal);
+            adminModal.addEventListener('click', (e) => { if (e.target === adminModal) closeAdminModal(); });
+
+
             // Image Modal
             const imageModal = document.getElementById('image-modal');
             const expandedImage = document.getElementById('expanded-image');
@@ -386,6 +418,7 @@
             // --- Form Submission ---
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxknhPYnuZZO4QC3tc0_ANt45y_uGufVafbZfDi7u9sjnQbDmQpOLsbgGF_vMyenSxN/exec'; 
             
+            // Demo Form
             const demoForm = document.getElementById('demo-form');
             const demoSubmitBtn = document.getElementById('submit-btn');
             const demoFormStatus = document.getElementById('form-status');
@@ -421,6 +454,48 @@
                     demoSubmitBtn.textContent = originalBtnText;
                 });
             });
+            
+            // Admin Form
+            const adminForm = document.getElementById('admin-form');
+            const adminFormStatus = document.getElementById('admin-form-status');
+            adminForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = adminForm.username.value;
+                const password = adminForm.password.value;
+                
+                // Set the correct credentials
+                const correctUsername = "nicholaskartos";
+                const correctPassword = "livedemo";
+                
+                if (username === correctUsername && password === correctPassword) {
+                    adminFormStatus.textContent = 'Login successful! Opening admin page in a new tab...';
+                    adminFormStatus.style.color = '#4ade80';
+
+                    // Log the successful login to the Google Sheet
+                    const loginData = {
+                        name: 'Admin Login Success',
+                        organization: username,
+                        email: new Date().toISOString()
+                    };
+
+                    fetch(scriptURL, { 
+                        method: 'POST', 
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(loginData)
+                    }).catch(error => console.error('Error logging admin access:', error.message));
+
+
+                    // Redirect to the specified URL by opening in a new tab
+                    setTimeout(() => {
+                        window.open('https://live-snaps-2-0-915213540827.us-west1.run.app/', '_blank');
+                    }, 1000);
+                } else {
+                    adminFormStatus.textContent = 'Invalid username or password.';
+                    adminForm.password.value = ''; // Clear password field
+                }
+            });
+
 
             // --- Back to Top Button Logic ---
             const backToTopBtn = document.getElementById('back-to-top');
