@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 sm:p-6">
+    <main class="w-full max-w-5xl bg-white rounded-xl shadow-2xl overflow-hidden">
+        
+        <!-- Iframe container with a responsive aspect ratio -->
+        <div class="bg-gray-50">
+            <!-- The iframe now has an empty src attribute initially -->
+            <iframe 
+                id="preview-frame"
+                src="" 
+                class="w-full h-[70vh] border-0"
+                title="Live Snaps App Preview"
+                frameborder="0">
+                Your browser does not support iframes.
+            </iframe>
+        </div>
+    </main>
+
+    <script>
+        // This script runs when the page loads to set the iframe source.
+        document.addEventListener('DOMContentLoaded', function() {
+            // The URL is encoded in Base64 to obscure it from the raw HTML source.
+            const encodedUrl = "aHR0cHM6Ly9saXZlLXNuYXBzLTItMC05MTUyMTM1NDA4MjcudXMtd2VzdDEucnVuLmFwcC8=";
+            
+            // Decode the URL from Base64. The atob() function decodes a base-64 encoded string.
+            const decodedUrl = atob(encodedUrl);
+            
+            // Find the iframe element by its ID.
+            const iframe = document.getElementById('preview-frame');
+            
+            // Set the src attribute of the iframe to the decoded URL.
+            if (iframe) {
+                iframe.src = decodedUrl;
+            }
+        });
+    </script>
+
+</body>
+</html>
+
